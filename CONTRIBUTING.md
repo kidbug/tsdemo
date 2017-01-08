@@ -1,6 +1,6 @@
-# Commiting Changes to tsdemo
+# Committing Changes to tsdemo
 This document explains how a participant should do things like contribute new features and submit patches.
-It assumes a good understanding of [Git][12] and [GitHub][11].
+It assumes hands on experience using [Git][12] and [GitHub][11].
 
 ## Terminology
 Many of these terms have more than one meaning, but for the purposes of this document,
@@ -32,27 +32,28 @@ If the project owner likes your work,
 they might pull your fix into the original repository!
 
 ## Step 1: Set Things Up
-Creating a fork is producing a personal copy of someone else’s project
-and is sort of bridge between the original repository and your personal copy.
+Creating a fork is producing a personal copy of someone else’s project.
+This acts as sort of bridge between the original repository and your personal copy.
 When you are cloning a GitHub repository on your local workstation,
 you cannot contribute back to the upstream repository unless you are explicitly declared as "contributor".
 
 ### Fork the Repository
 Firstly you need a fork of the project,
-so go ahead and press the "fork" button in GitHub.
+and you do this by pressing the "fork" button in GitHub on the main repository.
 This will create a copy of the repository in your own GitHub account
-and you'll see a note that it's been forked underneath the project name.
+and you'll see a note that it's has been forked underneath the project name.
 For example:
 
-1. Login to Github using your account.  Go to the repository on github repository you wish to contribute to.  Say it’s by `kidbug`, and is called `tsdemo`, then you’ll find it at http://github.com/kidbug/tsdemo.
+1. Login to Github using your account.  Go to the repository on GitHub you wish to contribute to.  Let say it’s by `kidbug`, and is called `tsdemo`, then you’ll find it at http://github.com/kidbug/tsdemo.
 1. Click the “Fork” button at the top right.
-1. You’ll now have your own copy of that repository withing your github account.  This will be at http://github.com/jeffskinnerbox/tsdemo.
+1. You’ll now have your own copy of that repository withing your GitHub account.  For example http://github.com/jeffskinnerbox/tsdemo.
 
 ### Clone to Local System
 Now clone the repository you created with your Github account to your local system.
 You'll also need to set up a new remote that points to the original/source project
 so that you can grab any changes from the original, or `upstream` repository
 and bring them into your local copy.
+Below is an example of how this is done:
 
 ```bash
 # clone the repostory
@@ -64,8 +65,8 @@ cd tsdemo
 git remote add upstream https://github.com/kidbug/tsdemo
 ```
 
-You now have two remotes for this project on your filesystem
-([What is the difference between origin and upstream on GitHub?][01]):
+You now have two remotes, `origin` & `upstream`, for this project on your filesystem
+[What is the difference between origin and upstream on GitHub?][01]:
 
 1. `origin` which points to your GitHub fork of the project. You can read/write to this remote.
 1. `upstream` which points to the source project's GitHub repository. You can only read from this remote.
@@ -74,6 +75,7 @@ To verify the new `upstream` repository you've specified for your fork,
 type `git remote -v`.
 You should see the URL for your fork as `origin`,
 and the URL for the original repository as `upstream`.
+For example:
 
 ```bash
 # verify repositories
@@ -87,7 +89,7 @@ upstream	https://github.com/kidbug/tsdemo (push)
 * You will use `upstream` to [fetch][02] from the original repository (in order to keep your local copy in [sync][05] with the project you want to contribute to).
 * You will use `origin` to [pull][02] and [push][03] since you can contribute to your own repository
 (See [Git Pull vs Git Fetch (and Stashing)][06]).
-* You will contribute back to the `upstream` repository by making a [pull request][04].
+* You will contribute back to the `upstream` repository by making a [pull request][04]. You do not have write permissions on that GitHub repository.
 
 ## Step 2: Do Some Work
 An important rule is to put each piece of work on its own branch.
@@ -122,7 +124,7 @@ You can name your branch whatever you like,
 but it helps for it to be meaningful.
 Including the issue number is usually helpful.
 
-I'm creating a utility that creates traffic load for a demonstration.
+For example, I'm creating a utility that creates traffic load for a demonstration.
 I'm call this functionality "tsloader" and so this what I'll call my branch.
 
 ```bash
@@ -133,7 +135,8 @@ git checkout -b tsloader master
 ### Make Your Updates
 Now make you update within this branch.
 When you have your project at a point that you want to share, you have to push it to `origin`.
-The command for this is simple: `git push [remote-name] [branch-name]`:
+The command for this is simple: `git push [remote-name] [branch-name]`.
+For my example of tsloader:
 
 ```bash
 # add the changes to  your local repository
@@ -193,7 +196,8 @@ This [avoids losing information][08] about the historical existence of a feature
 and groups together all commits that together added the feature.
 
 # Sources
-For additional insights, read the following articles, many of which were used as source materials:
+For additional insights, read the following articles,
+many of which were used as source materials for this writeup:
 
 * [A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/)
 * [How to Contribute to Someone's GitHub Repository](https://www.youtube.com/watch?v=yr6IzOGoMsQ)
@@ -215,11 +219,3 @@ For additional insights, read the following articles, many of which were used as
 [10]:https://guides.github.com/introduction/flow/
 [11]:https://guides.github.com/activities/hello-world/
 [12]:https://git-scm.com/
-[13]:
-[14]:
-[15]:
-[16]:
-[17]:
-[18]:
-[19]:
-[20]:

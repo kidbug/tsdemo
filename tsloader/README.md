@@ -1,25 +1,21 @@
 # What is tsloader
 This tool, `tsloader`, is intended to [send JSON-formatted data][02] (aka [dweet][03] messages)
-from a devices to [ThingSpace][01] in support of demonstrations.
+from a devices to [ThingSpace][01] in support of client demonstrations.
 In this current version, `tsloader` does this by running a daemon
 that creates regular [system activity reports (sar)][04],
 and parses the sar data to a simple, space delimited message.
-This daemon ([`sar_daemon.sh][16]),
-running within a [Node-RED][05] application (Node-RED flow [sar_to_ts_flow][17]),
+This daemon ([`sar_daemon.sh`][16]),
+running within a [Node-RED][05] application (Node-RED flow [`tsloader_flow`][17]),
 that formats the information to [JSON][06] and [POST][07] it to ThingSpace.
-
-If `tsloader` is being run on a system that isn't being heavily used,
-it will likely create sar reports that are fairly static.
-To combat this,
-include here is a shell script, using the Linux utility `stress`,
-which will help create some viability in the reports.
 
 # Design Decisions
 This tool requires Linux but is intended to be highly portal across hardware platforms.
 To make the tool ease to use and easily extended,
-it makes heavy use of Node-RED.
+it use Node-RED.
 While intended to operate unseen in the background, this Node-RED application could easily be
-made part of any demonstration because of its browser based, [flow programming][08] interface.
+made part of any demonstration if desired.
+Node-RED its browser based and uses a [flow programming][08] paradigm,
+making it easy to describe its functionality.
 
 `tsloader` should run on any Linux hardware but the instructions here are for
 installing and operating on a [Raspberry Pi 3][09].
@@ -28,28 +24,32 @@ installing and operating on a [Raspberry Pi 3][09].
 # Setting Up tsloader
 While not required,
 the procedure here is for setting up the Raspberry Pi 3 as a [headless devices][12].
-The advantage is that you SSH into the devices so I don't need to attach a monitor/keyboard/mouse.
-You'll need SSH tools on another computer, like your laptop, to login into the Raspberry Pi.
+The advantage is you don't need to attach a monitor/keyboard/mouse,
+just login from another computer.
+You'll need SSH tools on that other computer, like your laptop, to login into the Raspberry Pi.
 
-The real trick on going headless is doing the initial setup of the device
+The real trick on going headless is doing the initial setup of the Raspberry Pi
 without an HDMI monitor or a keyboard / mouse,
 required by the [typical RPi setup][13].
 Using just a SD Card reader/writer, a USB WiFi adapter,
-and a Linux machine, I will describe the whole setup here.
+and a Linux machine, I provide a description of the whole setup in Step 1.
 
-By the way, if you want to make an existing Raspberry Pi headless,
+If you want to make an existing Raspberry Pi headless,
 you don't need to follow this whole procedure.
-Just make sure SSH is working and follow Step 3.
 If you want to also upgrade your existing Raspberry Pi OS to the latest version,
 check out the article ["Raspbian GNU/Linux upgrade from Wheezy to Raspbian Jessie 8"][14].
 
 ## Step 1: Configuring the Raspberry Pi
 There are many post explaining how to set up a headless Raspberry Pi,
-bu I used the posting "[HowTo: Set-Up the Raspberry Pi as a Headless Device][15]".
+but I used the posting "[HowTo: Set-Up the Raspberry Pi as a Headless Device][15]".
 I followed steps 1 to 11.
-To assure every thing is working properly, reboot and log back in.
+Once your complete, make sure everything is working properly by rebooting and log back in.
 
 ## Step 2: Install tsloader
+Now clone the tsdemo project as shown below
+(**NOTE:** Generally, you clone the main repository (aka `upstream` remote)
+and **not** this forked version.
+But at this moment, the pull request hasn't been submitted.):
 
 ```bash
 # install tsdemo files
@@ -66,8 +66,8 @@ cd tsloader
 ## Step 3: Installing Additional Node Modules
 Next we need to install some required Node-RED node modules.
 A subtlety (bug?)  with the [Node-RED implementation on the Raspberry Pi][22]
-is that you must do installs while within the users Node-RED configuration directory,
-by default this is `~/.node-red`.
+is that you must do installs while within the users Node-RED configuration directory.
+By default this is `~/.node-red`.
 Therefore, it appears that Node-RED modules are not global,
 so **DO NOT** use `nmp install -g ...` .
 
@@ -90,7 +90,7 @@ sudo npm install node-red-node-daemon
 # install tool to timestamp JSON message
 sudo npm install thethingbox-node-timestamp
 
-# install tools for operating system information
+# install tools to get operating system information
 sudo npm install node-red-contrib-os
 ```
 
@@ -108,18 +108,18 @@ The final step is to install and deploy (aka execute) the `tsloader` flow.
 Once completed, `tsloader` will  immediately start posting data to ThingSpace.
 Do the following tasks:
 
-1. Start Node-RED via running `node-red` in a terminal
+1. Start Node-RED by executing `node-red` on the command-line in a terminal
 (see alternative ways [here][23])
-1. Pull up the Node-RED user inteface by entering `http://<raspberry-pi-host-name>:1880` into your browser.
-1. Import the `tsloader flow into Node-RED by copying the contents of
-`/home/pi/src/tsdemo/tsloader/tsloader_flow` into Node_RED via entering 'Ctrl-i`a on the UI.
+1. Pull up the Node-RED user interface by entering `http://<raspberry-pi-host-name>:1880` into your browser.
+1. Import the tsloader flow into Node-RED by copying the contents of
+`/home/pi/src/tsdemo/tsloader/tsloader_flow` into Node_RED via entering 'Ctrl-i` on the Node-RED UI.
 (see [here][24] for more information).
 1. Double click on the tab heading to name the flow "tsloader" (optional)
-1. Click the "Deply" button to start the flow and posting data to ThingSpace
+1. Click the "Deply" button to start the flow and begin posting data to ThingSpace
 
-To checkto assure everything is working,
+To check assure everything is working,
 turn on the "msg.statusCode" node and you should see HTTP status code "200" being printed.
-Also, you can check ThingSpace via"
+Also, you can check ThingSpace via:
 
 ```bash
 # check dweet message status on thingspace
@@ -128,7 +128,7 @@ curl -s -X GET --header "Accept: application/json" "https://thingspace.io/get/dw
 
 `tsloader` should now run continously until you stop Node-RED.
 
-### Node-RED UI Edit Cheatsheat
+### Node-RED UI Edit Cheat Sheet
 * Editing Nodes
     * copy a node - `ctrl-c`
     * paste a node - `ctrl-v`
@@ -136,12 +136,13 @@ curl -s -X GET --header "Accept: application/json" "https://thingspace.io/get/dw
 * Importing Flows
     * You can imported flows straight into the editor by pasting the JSON representing the flow into the Import dialog (`Ctrl-i` or via the dropdown menu within Node-RED).
 * Exporting Flows
-    * Use `Ctrl-a` to select all the flows on the tab and `Ctrl-e` to popup the flow.  From there, you can do copy the flow to your clipboard.
+    * Use `Ctrl-a` to select all the flows on the tab and `Ctrl-e` to popup the flow.  From there, you can copy the flow to your clipboard.
 
 ## Step 6: Creating More Variability in the Data
 To get more variability within the data created by `tsloader`,
-you'll need to add load to the processor,
-you could run tools like [`sysbench`][18] or [`stress-ng`][19] at random periods.
+you'll need to add load to the processor.
+Run some resource consuming application
+or you could run tools like [`sysbench`][18] or [`stress-ng`][19] at random periods.
 
 # Author's Notes
 * Currently, this README references my fork for tsdemo and my branch for tsloader.
