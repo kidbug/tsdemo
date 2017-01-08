@@ -4,7 +4,7 @@ TRUE=1
 FLAG="cpu"
 SEC=30
 
-USAGE="Usage:  $0 [ -f cpu | io | mem ] [ -s sleep-seconds ]"
+USAGE="Usage:  $0 [ -f cpu | io | mem | cs | tcp | ps ] [ -s sleep-seconds ]"
 while getopts "h?f:s:" opt; do
     case "$opt" in
     f)  FLAG=$OPTARG
