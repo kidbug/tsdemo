@@ -58,30 +58,87 @@ cd ~/src
 git clone https://github.com/jeffskinnerbox/tsdemo.git
 
 # go to the branch with tsloader
+cd tsdemo
 git checkout tsloader
-
-# make the daemon executable
 cd tsloader
-chmod a+x sar_daemon.sh
 ```
-## Step X:
 
-### Editing Nodes
-copy a node - ctrl-c
-paste a node - ctrl-v
-delete a node - delete or backspace
+## Step 3: Installing Additional Node Modules
+Next we need to install some required Node-RED node modules.
+A subtlety (bug?)  with the [Node-RED implementation on the Raspberry Pi][22]
+is that you must do installs while within the users Node-RED configuration directory,
+by default this is `~/.node-red`.
+Therefore, it appears that Node-RED modules are not global,
+so **DO NOT** use `nmp install -g ...` .
 
-### Importing Flows
-You can imported flows straight into the editor by pasting the JSON
-representing the flow into the Import dialog
-(`Ctrl-i` or via the dropdown menu within Node-RED).
+You can search for available nodes in the [Node-RED library][20] or on the [npm repository][21].
+We need the following node modules:
 
-### Exporting Flows
-Use `Ctrl-a` to select all the flows on the tab and `Ctrl-e`  to popup the flow.
-From there, you can do copy the flow to your clipboard.
+* [daemon](https://www.npmjs.com/package/node-red-node-daemon)
+* [timestamp](http://flows.nodered.org/node/thethingbox-node-timestamp)
+* [OS Information](http://flows.nodered.org/node/node-red-contrib-os)
 
+They are installed as follows:
 
-## Step X: Creating More Variability in the Data
+```bash
+# all node-red module must go here
+cd ~/.node-red
+
+# install daemon to run bash script
+sudo npm install node-red-node-daemon
+
+# install tool to timestamp JSON message
+sudo npm install thethingbox-node-timestamp
+
+# install tools for operating system information
+sudo npm install node-red-contrib-os
+```
+
+## Step 4: Install Sar
+The Node-RED `tsloader` flow runs a daemon shell that make use of [system activity reports (sar)][04],
+We must install this package via:
+
+```bash
+# install system activity reports, aka sar
+sudo apt-get install sysstat
+```
+
+## Step 5: Installing tsloader Flow
+The final step is to install and deploy (aka execute) the `tsloader` flow.
+Once completed, `tsloader` will  immediately start posting data to ThingSpace.
+Do the following tasks:
+
+1. Start Node-RED via running `node-red` in a terminal
+(see alternative ways [here][23])
+1. Pull up the Node-RED user inteface by entering `http://<raspberry-pi-host-name>:1880` into your browser.
+1. Import the `tsloader flow into Node-RED by copying the contents of
+`/home/pi/src/tsdemo/tsloader/tsloader_flow` into Node_RED via entering 'Ctrl-i`a on the UI.
+(see [here][24] for more information).
+1. Double click on the tab heading to name the flow "tsloader" (optional)
+1. Click the "Deply" button to start the flow and posting data to ThingSpace
+
+To checkto assure everything is working,
+turn on the "msg.statusCode" node and you should see HTTP status code "200" being printed.
+Also, you can check ThingSpace via"
+
+```bash
+# check dweet message status on thingspace
+curl -s -X GET --header "Accept: application/json" "https://thingspace.io/get/dweets/for/tsloader" | jq -C '.' | head -n 50
+```
+
+`tsloader` should now run continously until you stop Node-RED.
+
+### Node-RED UI Edit Cheatsheat
+* Editing Nodes
+    * copy a node - `ctrl-c`
+    * paste a node - `ctrl-v`
+    * delete a node - delete or backspace
+* Importing Flows
+    * You can imported flows straight into the editor by pasting the JSON representing the flow into the Import dialog (`Ctrl-i` or via the dropdown menu within Node-RED).
+* Exporting Flows
+    * Use `Ctrl-a` to select all the flows on the tab and `Ctrl-e` to popup the flow.  From there, you can do copy the flow to your clipboard.
+
+## Step 6: Creating More Variability in the Data
 To get more variability within the data created by `tsloader`,
 you'll need to add load to the processor,
 you could run tools like [`sysbench`][18] or [`stress-ng`][19] at random periods.
@@ -112,4 +169,8 @@ I must reference the original project site (https://github.com/kidbug/tsdemo, th
 [17]:https://github.com/jeffskinnerbox/tsdemo/blob/tsloader/tsloader/sar_to_ts_flow
 [18]:https://www.howtoforge.com/how-to-benchmark-your-system-cpu-file-io-mysql-with-sysbench
 [19]:http://www.ubuntugeek.com/stress-ng-tool-to-load-and-stress-your-ubuntu-system.html
-[20]:
+[20]:http://flows.nodered.org/
+[21]:https://www.npmjs.com/browse/keyword/node-red
+[22]:http://nodered.org/docs/hardware/raspberrypi#using-the-editor
+[23]:https://nodered.org/docs/hardware/raspberrypi
+[24]:https://nodered.org/docs/getting-started/first-flow
